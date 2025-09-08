@@ -1,0 +1,5 @@
+/* Global CSS for Pawnshop Management App */
+/* Import Bulma CSS from node_modules */
+@import 'bulma/css/bulma.min.css';
+/* Import Font Awesome CSS from node_modules */
+@import '@fortawesome/fontawesome-free/css/all.min.css';
