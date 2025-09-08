@@ -1,5 +1,5 @@
 <template>
-  <div class="has-background-light is-min-height-100vh">
+  <div class="page-container">
     <!-- Header Section -->
     <div class="page-header">
       <div class="container">
@@ -61,8 +61,10 @@
       </div>
     </div>
 
-    <div class="section" v-if="customer">
-      <div class="container">
+    <!-- Main Content -->
+    <div class="page-content">
+      <section class="section" v-if="customer">
+        <div class="container">
         <div class="columns">
           <!-- Left Column -->
           <div class="column is-8">
@@ -181,7 +183,7 @@
                     </span>
                     <h3 class="title is-5 has-text-grey-light mt-4">No loans yet</h3>
                     <p class="subtitle is-6 has-text-grey">This customer hasn't taken any loans yet.</p>
-                    <router-link :to="`/loans/new?customer=${customer.id}`" class="button is-primary">
+                    <router-link :to="`/loans/new?customer=${customer.id}`" class="button is-primary has-text-white">
                       <span class="icon">
                         <i class="fas fa-plus"></i>
                       </span>
@@ -355,16 +357,17 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </div>
+      </section>
 
-    <div v-else class="section">
-      <div class="container">
+      <section class="section" v-else>
+        <div class="container">
         <div class="has-text-centered py-6">
           <div class="loading-spinner"></div>
           <p class="mt-4">Loading customer details...</p>
         </div>
-      </div>
+        </div>
+      </section>
     </div>
 
     <!-- Delete Confirmation Modal -->

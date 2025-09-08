@@ -48,10 +48,36 @@ const calculatePawnTicketDetails = (ticket) => {
     return { ...ticket.toJSON(), status, accrued_interest: accruedInterest, penalties, grace_period_end: ticket.grace_period_end };
 };
 
-// Get all pawn tickets (Admin only)
-router.get('/', auth, authorizeRole(['ADMIN']), async (req, res) => {
+// Get all pawn tickets (Admin only) or current user's pawn tickets (Customer)
+router.get('/', auth, async (req, res) => {
     try {
-        const tickets = await db.PawnTicket.findAll({ include: [{ model: db.Customer, as: 'customer' }, { model: db.PawnedItem, as: 'pawnedItems' }] }); // FIX: Include PawnedItem
+        let tickets;
+        
+        if (req.user.role === 'ADMIN') {
+            tickets = await db.PawnTicket.findAll({ 
+                include: [
+                    { model: db.Customer, as: 'customer' }, 
+                    { model: db.PawnedItem, as: 'pawnedItems' }
+                ] 
+            });
+        } else if (req.user.role === 'CUSTOMER') {
+            // Get customer profile for the logged-in user
+            const customer = await db.Customer.findOne({ where: { user_id: req.user.id } });
+            if (!customer) {
+                return res.status(404).json({ message: 'Customer profile not found' });
+            }
+            
+            tickets = await db.PawnTicket.findAll({ 
+                where: { customer_id: customer.id },
+                include: [
+                    { model: db.Customer, as: 'customer' }, 
+                    { model: db.PawnedItem, as: 'pawnedItems' }
+                ] 
+            });
+        } else {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        
         const ticketsWithDetails = tickets.map(calculatePawnTicketDetails);
         res.json(ticketsWithDetails);
     } catch (err) {

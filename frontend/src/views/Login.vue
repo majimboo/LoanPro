@@ -1,9 +1,12 @@
 <template>
-  <div class="container">
-    <div class="columns is-centered">
-      <div class="column is-half">
-        <div class="box">
-          <h1 class="title has-text-centered">Login</h1>
+  <div class="page-container">
+    <div class="page-content">
+      <section class="section">
+        <div class="container">
+          <div class="columns is-centered">
+            <div class="column is-half">
+              <div class="box">
+                <h1 class="title has-text-centered">Login</h1>
           <form @submit.prevent="handleLogin">
             <div class="field">
               <label class="label">Username</label>
@@ -39,8 +42,11 @@
               {{ errorMessage }}
             </div>
           </form>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

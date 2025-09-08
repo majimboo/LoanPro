@@ -1,16 +1,32 @@
 <template>
-  <div class="container is-fluid">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li><router-link to="/reports">Reports</router-link></li>
-        <li class="is-active"><a href="#" aria-current="page">Financial Reports</a></li>
-      </ul>
-    </nav>
+  <div class="page-container">
+    <div class="page-header">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+          <ul>
+            <li><router-link to="/reports">Reports</router-link></li>
+            <li class="is-active"><a href="#" aria-current="page">Financial Reports</a></li>
+          </ul>
+        </nav>
+        
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div>
+                <h1 class="title is-3">Financial Reports</h1>
+                <p class="subtitle is-5">Track your financial performance and revenue</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <h1 class="title">Financial Reports</h1>
-
-    <div class="columns">
-      <div class="column is-one-quarter">
+    <div class="page-content">
+      <section class="section">
+        <div class="container">
+          <div class="columns">
+            <div class="column is-one-quarter">
         <div class="box">
           <h2 class="subtitle">Report Filters</h2>
           <div class="field">
@@ -45,11 +61,11 @@
               </button>
             </div>
           </div>
-        </div>
-      </div>
+            </div>
+            </div>
 
-      <div class="column is-three-quarters">
-        <div class="box">
+            <div class="column is-three-quarters">
+              <div class="box">
           <div v-if="!reportData && !isLoading" class="notification is-info">
             <p>Select report parameters and click "Generate Report" to view financial data.</p>
           </div>
@@ -106,9 +122,12 @@
             <div v-if="reportData.chart" class="mt-5">
               <canvas ref="chartCanvas" width="400" height="200"></canvas>
             </div>
+              </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

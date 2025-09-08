@@ -1,16 +1,32 @@
 <template>
-  <div class="container is-fluid">
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li><router-link to="/reports">Reports</router-link></li>
-        <li class="is-active"><a href="#" aria-current="page">Performance Reports</a></li>
-      </ul>
-    </nav>
+  <div class="page-container">
+    <div class="page-header">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+          <ul>
+            <li><router-link to="/reports">Reports</router-link></li>
+            <li class="is-active"><a href="#" aria-current="page">Performance Reports</a></li>
+          </ul>
+        </nav>
+        
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div>
+                <h1 class="title is-3">Performance Reports</h1>
+                <p class="subtitle is-5">Analyze business performance metrics</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <h1 class="title">Performance Reports</h1>
-
-    <div class="columns">
-      <div class="column is-one-quarter">
+    <div class="page-content">
+      <section class="section">
+        <div class="container">
+          <div class="columns">
+            <div class="column is-one-quarter">
         <div class="box">
           <h2 class="subtitle">Report Parameters</h2>
           <div class="field">
@@ -77,11 +93,11 @@
               </button>
             </div>
           </div>
-        </div>
-      </div>
+            </div>
+            </div>
 
-      <div class="column is-three-quarters">
-        <div class="box">
+            <div class="column is-three-quarters">
+              <div class="box">
           <div v-if="!reportData && !isLoading" class="notification is-info">
             <p>Configure report parameters and click "Generate Report" to view performance metrics.</p>
           </div>
@@ -194,9 +210,12 @@
                 </div>
               </div>
             </div>
+              </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

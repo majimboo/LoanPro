@@ -1,5 +1,5 @@
 <template>
-  <div class="has-background-light is-min-height-100vh">
+  <div class="page-container">
     <!-- Page Header -->
     <div class="page-header">
       <div class="container">
@@ -23,7 +23,7 @@
             <div class="level-item">
               <div class="field is-grouped">
                 <p class="control">
-                  <router-link to="/loans/new" class="button is-primary is-medium">
+                  <router-link to="/loans/new" class="button is-primary">
                     <span class="icon">
                       <i class="fas fa-plus"></i>
                     </span>
@@ -31,7 +31,7 @@
                   </router-link>
                 </p>
                 <p class="control">
-                  <button class="button is-light is-medium" @click="refreshLoans">
+                  <button class="button is-light" @click="refreshLoans">
                     <span class="icon">
                       <i class="fas fa-sync-alt" :class="{ 'fa-spin': isRefreshing }"></i>
                     </span>
@@ -45,140 +45,169 @@
       </div>
     </div>
 
-    <div class="is-flex is-flex-direction-column columns">
+    <!-- Main Content -->
+    <div class="page-content">
       <!-- Quick Stats Cards -->
-      <div class="quick-stats column">
-        <div class="columns">
-          <div class="column">
-            <div class="stat-card has-background-success">
-              <div class="is-flex-grow-1">
-                <div class="is-size-2 has-text-weight-bold mb-1">{{ stats.active }}</div>
-                <div class="is-size-7">Active Loans</div>
-              </div>
-              <div class="stat-icon">
-                <i class="fas fa-handshake"></i>
-              </div>
-            </div>
-          </div>
-          <div class="column">
-            <div class="stat-card has-background-warning">
-              <div class="is-flex-grow-1">
-                <div class="is-size-2 has-text-weight-bold mb-1">{{ stats.dueSoon }}</div>
-                <div class="is-size-7">Due Soon</div>
-              </div>
-              <div class="stat-icon">
-                <i class="fas fa-clock"></i>
+      <section class="section py-4">
+        <div class="container">
+          <div class="columns">
+            <div class="column">
+              <div class="card stats-card has-background-success has-text-white">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-content">
+                      <p class="title is-3 has-text-white">{{ stats.active }}</p>
+                      <p class="subtitle is-6 has-text-white-bis">Active Loans</p>
+                    </div>
+                    <div class="media-right">
+                      <span class="icon is-large has-text-white-ter">
+                        <i class="fas fa-handshake fa-2x"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="column">
-            <div class="stat-card has-background-danger">
-              <div class="is-flex-grow-1">
-                <div class="is-size-2 has-text-weight-bold mb-1">{{ stats.overdue }}</div>
-                <div class="is-size-7">Overdue</div>
-              </div>
-              <div class="stat-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+            <div class="column">
+              <div class="card stats-card has-background-warning has-text-white">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-content">
+                      <p class="title is-3 has-text-white">{{ stats.dueSoon }}</p>
+                      <p class="subtitle is-6 has-text-white-bis">Due Soon</p>
+                    </div>
+                    <div class="media-right">
+                      <span class="icon is-large has-text-white-ter">
+                        <i class="fas fa-clock fa-2x"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="column">
-            <div class="stat-card has-background-info">
-              <div class="is-flex-grow-1">
-                <div class="is-size-2 has-text-weight-bold mb-1">₱{{ formatCurrency(stats.totalValue) }}</div>
-                <div class="is-size-7">Total Value</div>
+            <div class="column">
+              <div class="card stats-card has-background-danger has-text-white">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-content">
+                      <p class="title is-3 has-text-white">{{ stats.overdue }}</p>
+                      <p class="subtitle is-6 has-text-white-bis">Overdue</p>
+                    </div>
+                    <div class="media-right">
+                      <span class="icon is-large has-text-white-ter">
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="stat-icon">
-                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="column">
+              <div class="card stats-card has-background-info has-text-white">
+                <div class="card-content">
+                  <div class="media">
+                    <div class="media-content">
+                      <p class="title is-3 has-text-white">₱{{ formatCurrency(stats.totalValue) }}</p>
+                      <p class="subtitle is-6 has-text-white-bis">Total Value</p>
+                    </div>
+                    <div class="media-right">
+                      <span class="icon is-large has-text-white-ter">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Filters and Search -->
-      <div class="filters-section column">
-        <div class="card">
-          <div class="card-content">
-            <div class="columns is-multiline is-mobile">
-              <!-- Search -->
-              <div class="column is-12-mobile is-6-tablet is-4-desktop">
-                <div class="field">
-                  <label class="label">Search Loans</label>
-                  <div class="control has-icons-left has-icons-right">
-                    <input class="input" type="text" v-model="searchQuery" 
-                           placeholder="Search by loan number, customer name..."
-                           @input="debouncedSearch">
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-search"></i>
-                    </span>
-                    <span class="icon is-small is-right" v-if="searchQuery" @click="clearSearch">
-                      <i class="fas fa-times"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Status Filter -->
-              <div class="column is-12-mobile is-6-tablet is-3-desktop">
-                <div class="field">
-                  <label class="label">Status</label>
-                  <div class="control">
-                    <div class="select is-fullwidth">
-                      <select v-model="filters.status" @change="applyFilters">
-                        <option value="">All Status</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="DUE_SOON">Due Soon</option>
-                        <option value="OVERDUE">Overdue</option>
-                        <option value="REDEEMED">Redeemed</option>
-                        <option value="FORFEITED">Forfeited</option>
-                      </select>
+      <section class="section py-4">
+        <div class="container">
+          <div class="card">
+            <div class="card-content">
+              <div class="columns is-multiline is-mobile">
+                <!-- Search -->
+                <div class="column is-12-mobile is-6-tablet is-4-desktop">
+                  <div class="field">
+                    <label class="label">Search Loans</label>
+                    <div class="control has-icons-left has-icons-right">
+                      <input class="input" type="text" v-model="searchQuery" 
+                             placeholder="Search by loan number, customer name..."
+                             @input="debouncedSearch">
+                      <span class="icon is-small is-left">
+                        <i class="fas fa-search"></i>
+                      </span>
+                      <span class="icon is-small is-right" v-if="searchQuery" @click="clearSearch">
+                        <i class="fas fa-times"></i>
+                      </span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Loan Type Filter -->
-              <div class="column is-12-mobile is-6-tablet is-3-desktop">
-                <div class="field">
-                  <label class="label">Loan Type</label>
-                  <div class="control">
-                    <div class="select is-fullwidth">
-                      <select v-model="filters.loanType" @change="applyFilters">
-                        <option value="">All Types</option>
-                        <option value="PAWN">Pawn</option>
-                        <option value="TITLE">Title Loan</option>
-                        <option value="CHECK_REDISCOUNT">Check Rediscount</option>
-                        <option value="SECURED">Secured</option>
-                        <option value="UNSECURED">Unsecured</option>
-                      </select>
+                <!-- Status Filter -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                  <div class="field">
+                    <label class="label">Status</label>
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select v-model="filters.status" @change="applyFilters">
+                          <option value="">All Status</option>
+                          <option value="ACTIVE">Active</option>
+                          <option value="DUE_SOON">Due Soon</option>
+                          <option value="OVERDUE">Overdue</option>
+                          <option value="REDEEMED">Redeemed</option>
+                          <option value="FORFEITED">Forfeited</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Date Range -->
-              <div class="column is-12-mobile is-6-tablet is-2-desktop">
-                <div class="field">
-                  <label class="label">Actions</label>
-                  <div class="control">
-                    <div class="field is-grouped">
-                      <p class="control">
-                        <button class="button is-light" @click="resetFilters">
-                          <span class="icon">
-                            <i class="fas fa-undo"></i>
-                          </span>
-                          <span class="is-hidden-mobile">Reset</span>
-                        </button>
-                      </p>
-                      <p class="control">
-                        <button class="button is-light" @click="exportLoans">
-                          <span class="icon">
-                            <i class="fas fa-download"></i>
-                          </span>
-                          <span class="is-hidden-mobile">Export</span>
-                        </button>
-                      </p>
+                <!-- Loan Type Filter -->
+                <div class="column is-12-mobile is-6-tablet is-3-desktop">
+                  <div class="field">
+                    <label class="label">Loan Type</label>
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select v-model="filters.loanType" @change="applyFilters">
+                          <option value="">All Types</option>
+                          <option value="PAWN">Pawn</option>
+                          <option value="TITLE">Title Loan</option>
+                          <option value="CHECK_REDISCOUNT">Check Rediscount</option>
+                          <option value="SECURED">Secured</option>
+                          <option value="UNSECURED">Unsecured</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="column is-12-mobile is-6-tablet is-2-desktop">
+                  <div class="field">
+                    <label class="label">Actions</label>
+                    <div class="control">
+                      <div class="field is-grouped">
+                        <p class="control">
+                          <button class="button is-light" @click="resetFilters">
+                            <span class="icon">
+                              <i class="fas fa-undo"></i>
+                            </span>
+                            <span class="is-hidden-mobile">Reset</span>
+                          </button>
+                        </p>
+                        <p class="control">
+                          <button class="button is-light" @click="exportLoans">
+                            <span class="icon">
+                              <i class="fas fa-download"></i>
+                            </span>
+                            <span class="is-hidden-mobile">Export</span>
+                          </button>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -186,10 +215,11 @@
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Loans Grid/List -->
-      <div class="loans-section column">
+      <section class="section">
+        <div class="container">
         <!-- View Toggle -->
         <div class="level is-mobile">
           <div class="level-left">
@@ -247,7 +277,7 @@
                   : 'Create your first loan to get started' }}
             </p>
             <div class="mt-5" v-if="!searchQuery">
-              <router-link to="/loans/new" class="button is-primary">
+              <router-link to="/loans/new" class="button is-primary has-text-white">
                 <span class="icon">
                   <i class="fas fa-plus"></i>
                 </span>
@@ -380,7 +410,8 @@
             </li>
           </ul>
         </nav>
-      </div>
+        </div>
+      </section>
     </div>
 
     <!-- Context Menu -->

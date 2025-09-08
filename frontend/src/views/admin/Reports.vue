@@ -1,8 +1,24 @@
 <template>
-  <div class="container is-fluid">
-    <h1 class="title">Reports</h1>
+  <div class="page-container">
+    <div class="page-header">
+      <div class="container">
+        <div class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <div>
+                <h1 class="title is-3">Reports</h1>
+                <p class="subtitle is-5">Generate and view business reports</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <div class="columns">
+    <div class="page-content">
+      <section class="section">
+        <div class="container">
+          <div class="columns">
       <div class="column is-one-quarter">
         <div class="box">
           <h2 class="subtitle">Report Categories</h2>
@@ -164,8 +180,9 @@
           <button @click="exportReport" class="button is-success">
             Export to CSV
           </button>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

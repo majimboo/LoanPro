@@ -1,7 +1,7 @@
 <template>
-  <div class="has-background-light is-min-height-100vh">
+  <div class="page-container">
     <!-- Progress Header -->
-    <div class="has-background-white py-5 mb-5 form-header-border">
+    <div class="page-header">
       <div class="container">
         <nav class="breadcrumb" aria-label="breadcrumbs">
           <ul>
@@ -45,15 +45,16 @@
       </div>
     </div>
 
-    <!-- Form Content -->
-    <div class="pb-6">
-      <div class="container">
+    <!-- Main Content -->
+    <div class="page-content">
+      <section class="section pb-6">
+        <div class="container">
         <form @submit.prevent="handleSubmit">
           <div class="columns">
             <!-- Main Form Column -->
             <div class="column is-8">
               <!-- Step 1: Loan Basic Information -->
-              <div class="card form-section">
+              <div class="card form-section no-hover">
                 <header class="card-header">
                   <p class="card-header-title">
                     <span class="icon mr-2">
@@ -180,7 +181,7 @@
               </div>
 
               <!-- Step 2: Financial Details -->
-              <div class="card form-section">
+              <div class="card form-section no-hover">
                 <header class="card-header">
                   <p class="card-header-title">
                     <span class="icon mr-2">
@@ -396,7 +397,8 @@
             </div>
           </div>
         </form>
-      </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>

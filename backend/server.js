@@ -129,17 +129,69 @@ app.get('/api/admin', auth, authorizeRole(['ADMIN']), (req, res) => {
 // Dashboard metrics endpoint
 app.get('/api/dashboard/metrics', auth, authorizeRole(['ADMIN']), async (req, res) => {
     try {
-        // Mock dashboard data - replace with actual queries
+        // Get actual counts from database
+        const [
+            totalCustomersCount,
+            activeLoansCount,
+            overdueLoansCount,
+            monthlyPayments
+        ] = await Promise.all([
+            db.Customer.count(),
+            db.Loan.count({ where: { status: 'ACTIVE' } }),
+            db.Loan.count({ where: { status: 'OVERDUE' } }),
+            db.Payment.sum('amount_paid', {
+                where: {
+                    payment_date: {
+                        [db.Sequelize.Op.gte]: new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                    }
+                }
+            })
+        ]);
+
+        // Calculate total active loan amounts
+        const activeLoans = await db.Loan.findAll({ 
+            where: { status: 'ACTIVE' },
+            attributes: ['principal_amount']
+        });
+        
+        const overdueLoans = await db.Loan.findAll({ 
+            where: { status: 'OVERDUE' },
+            attributes: ['outstanding_principal']
+        });
+
+        const activeTotalAmount = activeLoans.reduce((sum, loan) => 
+            sum + parseFloat(loan.principal_amount || 0), 0);
+        
+        const overdueTotalAmount = overdueLoans.reduce((sum, loan) => 
+            sum + parseFloat(loan.outstanding_principal || 0), 0);
+
+        // Count new customers this month
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const newCustomersThisMonth = await db.Customer.count({
+            where: {
+                created_at: { [db.Sequelize.Op.gte]: startOfMonth }
+            }
+        });
+
         const metrics = {
-            totalCustomers: 150,
-            activeLoans: 45,
-            overdueLoans: 8,
-            totalRevenue: 125000,
-            recentActivity: [
-                { id: 1, type: 'loan_created', description: 'New loan created for John Doe', timestamp: new Date() },
-                { id: 2, type: 'payment_received', description: 'Payment received from Jane Smith', timestamp: new Date() }
-            ]
+            activeLoans: { 
+                count: activeLoansCount, 
+                totalAmount: activeTotalAmount,
+                trend: 12 // Mock trend for now
+            },
+            overdueLoans: { 
+                count: overdueLoansCount, 
+                totalAmount: overdueTotalAmount 
+            },
+            totalCustomers: { 
+                count: totalCustomersCount,
+                newThisMonth: newCustomersThisMonth
+            },
+            monthlyRevenue: { 
+                amount: parseFloat(monthlyPayments || 0)
+            }
         };
+        
         res.json(metrics);
     } catch (error) {
         console.error('Error fetching dashboard metrics:', error);
@@ -150,32 +202,65 @@ app.get('/api/dashboard/metrics', auth, authorizeRole(['ADMIN']), async (req, re
 // Loans endpoint  
 app.get('/api/loans', auth, authorizeRole(['ADMIN']), async (req, res) => {
     try {
-        // Mock loan data - replace with actual queries
-        const loans = [
-            {
-                id: 1,
-                loan_number: 'LN-2024-001',
-                customer: { first_name: 'John', last_name: 'Doe', phone: '09123456789' },
-                loan_type: 'PAWN',
-                principal_amount: 10000,
-                outstanding_principal: 8500,
-                maturity_date: '2024-12-31',
+        const { limit = 10, sort = 'created_at:desc', filter } = req.query;
+        
+        let whereClause = {};
+        let order = [['created_at', 'DESC']];
+        
+        // Handle sorting
+        if (sort) {
+            const [field, direction] = sort.split(':');
+            order = [[field, direction.toUpperCase()]];
+        }
+        
+        // Handle filters
+        if (filter === 'due-soon') {
+            // Get loans due within the next 7 days
+            const sevenDaysFromNow = new Date();
+            sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+            
+            whereClause = {
                 status: 'ACTIVE',
-                created_at: new Date()
-            },
-            {
-                id: 2,
-                loan_number: 'LN-2024-002',
-                customer: { first_name: 'Jane', last_name: 'Smith', phone: '09987654321' },
-                loan_type: 'TITLE',
-                principal_amount: 25000,
-                outstanding_principal: 22000,
-                maturity_date: '2024-11-15',
-                status: 'DUE_SOON',
-                created_at: new Date()
-            }
-        ];
-        res.json(loans);
+                maturity_date: {
+                    [db.Sequelize.Op.between]: [new Date(), sevenDaysFromNow]
+                }
+            };
+        }
+        
+        const loans = await db.Loan.findAll({
+            where: whereClause,
+            include: [{
+                model: db.Customer,
+                as: 'customer',
+                attributes: ['first_name', 'last_name', 'phone']
+            }],
+            order: order,
+            limit: parseInt(limit),
+            attributes: [
+                'id', 'loan_number', 'principal_amount', 'outstanding_principal',
+                'maturity_date', 'status', 'created_at', 'interest_rate'
+            ]
+        });
+
+        // Transform data to match frontend expectations
+        const transformedLoans = loans.map(loan => ({
+            id: loan.id,
+            loan_number: loan.loan_number,
+            customer: loan.customer ? {
+                first_name: loan.customer.first_name,
+                last_name: loan.customer.last_name,
+                phone: loan.customer.phone
+            } : null,
+            loan_type: loan.loan_type,
+            principal_amount: loan.principal_amount,
+            outstanding_principal: loan.outstanding_principal,
+            maturity_date: loan.maturity_date,
+            status: loan.status,
+            interest_rate: loan.interest_rate,
+            created_at: loan.created_at
+        }));
+
+        res.json(transformedLoans);
     } catch (error) {
         console.error('Error fetching loans:', error);
         res.status(500).json({ error: 'Failed to fetch loans' });

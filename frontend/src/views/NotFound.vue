@@ -1,7 +1,9 @@
 <template>
-  <div class="hero is-fullheight">
-    <div class="hero-body">
-      <div class="container has-text-centered">
+  <div class="page-container">
+    <div class="page-content">
+      <div class="hero is-fullheight">
+        <div class="hero-body">
+          <div class="container has-text-centered">
         <div class="columns is-vcentered">
           <div class="column is-5">
             <figure class="image is-4by3">
@@ -72,6 +74,7 @@
             Error Code: {{ $route.path }} | 
             Time: {{ new Date().toLocaleString() }}
           </p>
+          </div>
         </div>
       </div>
     </div>
